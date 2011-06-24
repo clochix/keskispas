@@ -15,10 +15,10 @@
  *
  */
 if (!window.console) var console = {};
-console.log = console.log || function(){};
-console.warn = console.warn || function(){};
+console.log   = console.log   || function(){};
+console.warn  = console.warn  || function(){};
 console.error = console.error || function(){};
-console.info = console.info || function(){};
+console.info  = console.info  || function(){};
 
 var map;
 var tl;  // The Timeline
@@ -29,7 +29,6 @@ var tl;  // The Timeline
   //var tl;  // The Timeline
   var events = [];
   //var map; // The Map
-  var vector;
   function redrawEvents(e) {
     var min = e[0].getStart();
     var max = e[0].getStart();
@@ -68,7 +67,8 @@ var tl;  // The Timeline
   }
   this.getRadius = function getRadius() {
     var e = map.getExtent();
-    return Math.floor(OpenLayers.Util.distVincenty(new OpenLayers.LonLat(e.left, e.top), new OpenLayers.LonLat(e.right, e.top)) / 2);
+    r = Math.floor(OpenLayers.Util.distVincenty(new OpenLayers.LonLat(e.left, e.top), new OpenLayers.LonLat(e.right, e.top)) / 2);
+    return (r < 1 ? 1 : r);
   };
   function markerAdd(lon, lat, content, name, icon) {
     var lonlat = getLonLat(lon, lat);
@@ -159,7 +159,6 @@ var tl;  // The Timeline
       url: url, 
       data: data,
       success: function(res){
-        console.log(res);
         if (typeof(res) != "object") {
           error();
           return false;
@@ -176,17 +175,17 @@ var tl;  // The Timeline
             var photoUrl = 'http://farm'+e.farm+'.static.flickr.com/'+e.server+'/'+e.id+'_'+e.secret+'_s.jpg';
             var userUrl  = 'http://www.flickr.com/photos/'+e.pathalias+'/';
             var text     = e.title;
-            var content = '<div class="flickrItem '+itemName+'">'
-                        + '<a href="'+userUrl+e.id+'" target="_blank"><img src="'+photoUrl+'" title="'+e.title+'" /></a>'
-                        + '<p class="title translatable">'+e.title+'</p>'
-                        + '<p class="author">by <a href="'+userUrl+'" target="_blank">'+e.ownername+'</a></p>'
-                        + '<p><a class="description translatable">'+e.description._content+'</a></p>'
-                        + '<p class="datetaken">'+e.datetaken+'</p>'
-                        + '<p class="licence">'+licenses[e.license]+'</p>'
-                        + '<p class="tags">'+e.tags+'</p>'
-                        + '<p class="geo">'+e.longitude+' '+e.latitude+'</p>'
-                        + '</div>'
-            ;
+            var content  = '';
+            content += '<div class="flickrItem '+itemName+'">';
+            content += '<a href="'+userUrl+e.id+'" target="_blank"><img src="'+photoUrl+'" title="'+e.title+'" /></a>';
+            content += '<p class="title translatable">'+e.title+'</p>';
+            content += '<p class="author">by <a href="'+userUrl+'" target="_blank">'+e.ownername+'</a></p>';
+            content += '<p><a class="description translatable">'+e.description._content+'</a></p>';
+            content += '<p class="datetaken">'+e.datetaken+'</p>';
+            content += '<p class="licence">'+licenses[e.license]+'</p>';
+            content += '<p class="tags">'+e.tags+'</p>';
+            content += '<p class="geo">'+e.longitude+' '+e.latitude+'</p>';
+            content += '</div>';
             markerAdd(e.longitude, e.latitude, content, itemName);
             var evt = new Timeline.DefaultEventSource.Event( {
               start : new Date(e.datetaken.replace(/ /, 'T')),
@@ -223,7 +222,6 @@ var tl;  // The Timeline
       },
       crossDomain: true,
       success: function(res){
-        console.log(res);
         if (typeof(res) != "object") {
           error();
           return false;
@@ -237,14 +235,14 @@ var tl;  // The Timeline
         else { 
           res.events.event.forEach(function(e) {
             var itemName = getRandId();
-            var content = '<div class="fm-event ' + itemName + '">'
-                        + '<div class="title"><a href="'+e.url+'" target="_blank">'+e.title+'</a></div>'
-                        + '<div class="image"><img src="'+e.image[0]['#text']+'" /></div>'
-                        + '<div class="artist">'+e.artists.headliner+'</div>'
-                        + '<div class="date">'+e.startDate+'</div>'
-                        + '<div class="venue">'+e.venue.name+'</div>'
-                        + '</div>'
-            ;
+            var content = '';
+            content += '<div class="fm-event ' + itemName + '">';
+            content += '<div class="title"><a href="'+e.url+'" target="_blank">'+e.title+'</a></div>';
+            content += '<div class="image"><img src="'+e.image[0]['#text']+'" /></div>';
+            content += '<div class="artist">'+e.artists.headliner+'</div>';
+            content += '<div class="date">'+e.startDate+'</div>';
+            content += '<div class="venue">'+e.venue.name+'</div>';
+            content += '</div>';
             markerAdd(e.venue.location['geo:point']['geo:long'], e.venue.location['geo:point']['geo:lat'], content, itemName);
             var evt = new Timeline.DefaultEventSource.Event( {
               start : new Date(Date.parse(e.startDate)),
@@ -284,7 +282,6 @@ var tl;  // The Timeline
       url: url,
       data: data,
       success: function(res){
-        console.log(res);
         if (typeof(res) != "object") {
           error();
           return false;
@@ -301,12 +298,12 @@ var tl;  // The Timeline
             text = text.replace(/(https?:\/\/\S+)/ig,"<a href='$1' target='_blank'>$1</a>"); 
             text = text.replace(/(@(\S+))/ig,"<a href='http://twitter.com/$2' target='_blank'>$1</a>"); 
             var itemName = getRandId();
-            var content = '<div class="tweet ' + itemName + '">'
-                        + '<span class="from_user"><a href="http://twitter.com/' + e.from_user + '" target="__blank">' + e.from_user + ' : </a></span>'
-                        + '<span class="text translatable">' + text + '</span>'
-                        + '<p class="created_at"><a href="http://twitter.com/' + e.from_user + '/status/' + e.id_str + '" target="__blank">( ' + e.created_at + ' )</a></p>'
-                        + '</div>'
-            ;
+            var content = '';
+            content += '<div class="tweet ' + itemName + '">';
+            content += '<span class="from_user"><a href="http://twitter.com/' + e.from_user + '" target="__blank">' + e.from_user + ' : </a></span>';
+            content += '<span class="text translatable">' + text + '</span>';
+            content += '<p class="created_at"><a href="http://twitter.com/' + e.from_user + '/status/' + e.id_str + '" target="__blank">( ' + e.created_at + ' )</a></p>';
+            content += '</div>';
             if (e.geo) {
               markerAdd(e.geo.coordinates[1], e.geo.coordinates[0], content, itemName, 'twitter_newbird_blue.png');
             }
@@ -352,7 +349,6 @@ var tl;  // The Timeline
       url: url,
       data: data,
       success: function(res){
-        console.log(res);
         if (typeof(res) != "object") {
           error();
           return false;
@@ -365,12 +361,12 @@ var tl;  // The Timeline
         if (res && res.data && res.data.items) {
           res.data.items.forEach(function(e) {
             var itemName = getRandId();
-            var content = '<div class="buzz ' + itemName +'">'
-                        + '<div class="title translatable">'+e.title+"</div>"
-                        + '<div class="author"><a href="'+e.actor.profileUrl+'" target="_blank">'+e.actor.name+'</a></div>'
-                        + '<div>'+e.geocode+'</div>'
-                        + '</div>'
-                        ;
+            var content = '';
+            content += '<div class="buzz ' + itemName +'">';
+            content += '<div class="title translatable">'+e.title+"</div>";
+            content += '<div class="author"><a href="'+e.actor.profileUrl+'" target="_blank">'+e.actor.name+'</a></div>';
+            content += '<div>'+e.geocode+'</div>';
+            content += '</div>';
             var geo = e.geocode.split(' ');
             markerAdd(geo[1], geo[0], content, itemName);
             var evt = new Timeline.DefaultEventSource.Event( {
@@ -410,7 +406,6 @@ var tl;  // The Timeline
       url: url,
       data: data,
       success: function(res){
-        console.log(res);
         if (typeof(res) != "object") {
           error();
           return false;
@@ -423,23 +418,16 @@ var tl;  // The Timeline
         if (res && res.feed && res.feed.entry) {
           res.feed.entry.forEach(function(e) {
             var itemName = getRandId();
-            var content = '<div class="Youtube ' + itemName +'">'
-                        + '<div class="title translatable ">'+e.title['$t']+"</div>"
-                        + '<div class="video"><a href="'+e['media$group']['media$player'][0]['url']+'" target="_blank"><img src="'+e['media$group']['media$thumbnail'][0]['url']+'" width="120" height="90" /></a></div>'
-                        + '<div class="content translatable">'+e.content['$t']+"</div>"
-                        + '<div class="author"><a href="'+e.author[0].uri['$t']+'" target="_blank">'+e.author[0].name['$t']+'</a></div>'
-                        + '<div class="date">'+e.updated['$t']+"</div>"
-                        + '</div>'
-                        ;
-            if (e['georss$where']) {
-              var geo = e['georss$where']['gml$Point']['gml$pos']['$t'].split(' ');
+            var content = '<div class="Youtube ' + itemName + '">' + '<div class="title translatable ">'+e.title.$t+"</div>" + '<div class="video"><a href="'+e.media$group.media$player[0].url+'" target="_blank"><img src="'+e.media$group.media$thumbnail[0].url+'" width="120" height="90" /></a></div>' + '<div class="content translatable">'+e.content.$t+"</div>" + '<div class="author"><a href="'+e.author[0].uri.$t+'" target="_blank">'+e.author[0].name.$t+'</a></div>' + '<div class="date">'+e.updated.$t+"</div>" + '</div>';
+            if (e.georss$where) {
+              var geo = e.georss$where.gml$Point.gml$pos.$t.split(' ');
               markerAdd(geo[1], geo[0], content, itemName, 'youtube_32x32.png');
             }
             var evt = new Timeline.DefaultEventSource.Event( {
-              start : new Date(e.updated['$t']),
+              start : new Date(e.updated.$t),
               instant : true,
-              text : e.title['$t'],
-              caption : e.title['$t'],
+              text : e.title.$t,
+              caption : e.title.$t,
               classname: itemName,
               description: content
             });
@@ -483,8 +471,12 @@ var tl;  // The Timeline
   layers.push(new OpenLayers.Layer.Google("Google Satellite",{type: G_SATELLITE_MAP, numZoomLevels: 20}));
   map.addLayers(layers);
 
-  vector = new OpenLayers.Layer.Vector("Vector");
+  // Create a vector layer to draw
+  var vector = new OpenLayers.Layer.Vector("Vector", {projection: projection});
   map.addLayer(vector);
+  // Create a marker layer to draw
+  var markers = new OpenLayers.Layer.Markers("Markers", {projection: projection});
+  map.addLayer(markers);
 
   // Add controls
   map.addControl(new OpenLayers.Control.ArgParser());
@@ -513,9 +505,99 @@ var tl;  // The Timeline
     trigger: function(e) {
       var lonlat = map.getLonLatFromViewPortPx(e.xy).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
       map.setCenter(lonlat);
+      // Reverse geocoding
+      switch (jQuery('input:radio[name=reverse]:checked').val()) {
+        case 'street':
+          getJsonP({
+            url: 'http://api.geonames.org/findNearbyStreetsOSMJSON',
+            data: {
+              lng: lonlat.lon,
+              lat: lonlat.lat,
+              maxRows: 50,
+              username: instance.options.geonames
+            },
+            success:function(response) {
+              var places = jQuery("#geocode");
+              places.empty();
+              var streets = {};
+              response.streetSegment.forEach(function(e){
+                if (streets[e.name]) streets[e.name] += '|' + e.line;
+                else streets[e.name] = e.line;
+              });
+              for (var e in streets) {
+                places.append(jQuery('<li data-line="' + streets[e] + '">' + e + '</li>'));
+              }
+              places.slideDown();
+            }
+          });
+          break;
+        case 'interest':
+          getJsonP({
+            url: 'http://api.geonames.org/findNearbyPOIsOSMJSON',
+            data: {
+              lng: lonlat.lon,
+              lat: lonlat.lat,
+              maxRows: 50,
+              username: instance.options.geonames
+            },
+            success:function(response) {
+              var places = jQuery("#geocode");
+              places.empty();
+              response.poi.forEach(function(e){
+                places.append(jQuery('<li data-lat="' + e.lat + '" data-lon="' + e.lng + '">' + e.name + ' (' + e.typeName + ')</li>'));
+              });
+              places.slideDown();
+            }
+          });
+          break;
+        case 'toponym':
+          getJsonP({
+            url: 'http://api.geonames.org/findNearbyJSON',
+            data: {
+              lng: lonlat.lon,
+              lat: lonlat.lat,
+              lang: 'fr',
+              radius: getRadius(),
+              maxRows: 50,
+              style: 'full',
+              username: instance.options.geonames
+            },
+            success:function(response) {
+              var places = jQuery("#geocode");
+              places.empty();
+              response.geonames.forEach(function(e){
+                places.append(jQuery('<li data-lat="' + e.lat + '" data-lon="' + e.lng + '">' + e.name + ' (' + e.fcodeName + ')</li>'));
+              });
+              places.slideDown();
+            }
+          });
+          break;
+        case 'wikipedia':
+          getJsonP({
+            url: 'http://api.geonames.org/findNearbyWikipediaJSON',
+            data: {
+              lng: lonlat.lon,
+              lat: lonlat.lat,
+              lang: 'fr',
+              radius: getRadius(),
+              maxRows: 50,
+              style: 'full',
+              username: instance.options.geonames
+            },
+            success:function(response) {
+              var places = jQuery("#geocode");
+              places.empty();
+              response.geonames.forEach(function(e){
+                places.append(jQuery('<li data-lat="' + e.lat + '" data-lon="' + e.lng + '"><a href="http://' + e.wikipediaUrl + '" target="_blank">' + e.title + '</a></li>'));
+              });
+              places.slideDown();
+            }
+          });
+          break;
+      }
       //var point = new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat);
       //var circle = OpenLayers.Geometry.Polygon.createRegularPolygon(point, getRadius() * 1000, 50);
-      //vector.addFeatures(new OpenLayers.Feature.Vector(circle));
+      //vector.addFeatures(new OpenLayers.Feature.Vector(circle,{},{fill: true}));
     }
   });
   var click = new OpenLayers.Control.Click();
@@ -533,8 +615,6 @@ var tl;  // The Timeline
     }
   });
   // add marker
-  var markers = new OpenLayers.Layer.Markers( "Markers" );
-  map.addLayer(markers);
   var popup = null;
   var list = jQuery('#res');
   var lon, lat, zoom;
@@ -546,10 +626,10 @@ var tl;  // The Timeline
         var res = re.exec(window.location.search);
         if (res) parsed[res[1]] = res[2];
     } while (re.lastIndex > 0);
-    if (parsed['lon'] && parsed['lat']) {
+    if (parsed.lon && parsed.lat) {
       // nothing to do, the ArgParser control take the control
-      lon = parsed['lon'];
-      lat = parsed['lat'];
+      lon = parsed.lon;
+      lat = parsed.lat;
     }
   } 
   if (!lon || !lat) {
@@ -566,10 +646,10 @@ var tl;  // The Timeline
       map.setCenter(getLonLat(2.35099, 48.85667), 12);
     }
   }
-  if (parsed['q']) {
-    jQuery('#query').val(parsed['q']);
+  if (parsed.q) {
+    jQuery('#query').val(parsed.q);
   }
-  if (parsed['action']) {
+  if (parsed.action) {
     switch (parsed.action) {
       case 'flickr':
         getFlickr();
@@ -701,6 +781,40 @@ var tl;  // The Timeline
   jQuery("*[class*='itemK']").live('mouseenter', {action: 'active'}, itemOnhover);
   jQuery("*[class*='itemK']").live('mouseleave', {action: 'remove'}, itemOnhover);
 
+  // Display results of reverse geocode on map
+  var currentVF = null;
+  jQuery("#geocode li").live('mouseenter', function(){
+    var lines = jQuery(this).attr('data-line');
+    if (lines) {
+      currentVF = [];
+      lines = lines.split('|');
+      lines.forEach(function(li){
+        li = li.split(',');
+        var points = [];
+        li.forEach(function(l){
+          var p = l.split(' ');
+          points.push(new OpenLayers.Geometry.Point(p[0], p[1]));
+          //markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(p[0], p[1])));
+        });
+        var linestring = new OpenLayers.Geometry.LineString(points);
+        currentVF.push(new OpenLayers.Feature.Vector(linestring, null, {strokeColor: "#00FF00", strokeOpacity: 0.5, strokeWidth: 4}));
+      });
+      vector.addFeatures(currentVF);
+    } 
+    var lat = jQuery(this).attr('data-lat');
+    var lon = jQuery(this).attr('data-lon');
+    if (lat && lon) {
+      markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(lon, lat)));
+    }
+  });
+  window.vector = vector;
+  jQuery("#geocode li").live('mouseleave', function(){
+    if (currentVF !== null) {
+      vector.removeFeatures(currentVF);
+      currentVF = null;
+    }
+    markers.markers.forEach(function(m){markers.removeMarker(m);});
+  });
 
   //------------------------------
   // Update buttons

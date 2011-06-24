@@ -33,7 +33,7 @@ a {
 }
 h1 {
   text-align: center;
-  letter-spacing: 1em:
+  letter-spacing: 1em;
   margin: 1em;
   margin: 10px;
 }
@@ -45,7 +45,7 @@ h1 {
 #list-types li {
   display: inline;
 }
-#places {
+#places, #geocode {
   position: absolute;
   z-index: 5000;
   background-color: white;
@@ -55,6 +55,9 @@ h1 {
   margin: -12px 1px 1px 1px;
   padding: 10px;
   list-style-type: none;
+}
+#geocode {
+  left: 500px;
 }
 #places a {
   color: black;
@@ -164,10 +167,10 @@ h1 {
 }
 .translatable:hover {
   background-color: #444;
-  -moz-box-shadow: 0 0 2px #888, 0 0 5 #666;
-  -webkit-box-shadow: 0 0 2px #888, 0 0 5 #666;
+  -moz-box-shadow: 0 0 2px #888, 0 0 5px #666;
+  -webkit-box-shadow: 0 0 2px #888, 0 0 5px #666;
 }
 .simileAjax-bubble-container, .simileAjax-bubble-container A {
   color: black;
 }
-
+input[name=reverse] { margin: 0 15px 0 0;}

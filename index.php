@@ -30,7 +30,7 @@
           <option value="1209600">2 weeks</option>
           <option value="2419200">4 weeks</option>
         </select>
-        <a id="help-button" href="#help"><span class="help-toggle">Heeeeeeeeelp !</span><span class="help-toggle" style="display: none">Ok !</span></a>
+        <a id="help-button" href="#help"><span class="help-toggle">Help !</span><span class="help-toggle" style="display: none">Ok !</span></a>
       </div>
       <div>
         <input type="button" id="flickr-button" value="Flickr"/>
@@ -38,9 +38,22 @@
         <input type="button" id="twitter-button" value="Twitter"/>
         <input type="button" id="buzz-button" value="Buzz"/>
         <input type="button" id="youtube-button" value="Youtube"/>
+        <label>Display nearby: </label>
+        <label for="reverse-none">Nothing</label>
+        <input type="radio" id="reverse-none" name="reverse" value="none" />
+        <label for="reverse-street">Streets (buggy)</label>
+        <input type="radio" id="reverse-street" name="reverse" value="street" />
+        <label for="reverse-interest">Points of interests</label>
+        <input type="radio" id="reverse-interest" name="reverse" value="interest" />
+        <label for="reverse-toponym">Places</label>
+        <input type="radio" id="reverse-toponym" name="reverse" value="toponym" />
+        <label for="reverse-wikipedia">Wikipedia</label>
+        <input type="radio" id="reverse-wikipedia" name="reverse" value="wikipedia" />
       </div>
     </form>
     <ul id="places" style="display: none">
+    </ul>
+    <ul id="geocode" style="display: none">
     </ul>
     <div id="main" class="help-toggle">
       <div id="mapdiv"></div>
