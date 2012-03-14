@@ -53,8 +53,17 @@ h1 {
   border-radius: 0 0 10px 10px;
   box-shadow : 5px 5px 5px #888;
   margin: -12px 1px 1px 1px;
-  padding: 10px;
+  padding: 10px 0px;
   list-style-type: none;
+}
+#places li, #geocode li {
+  padding: 2px 10px;
+}
+#places li:hover, #geocode li:hover {
+  background-color: black;
+}
+#places li:hover a, #geocode li:hover a {
+  color: white;
 }
 #geocode {
   left: 500px;
